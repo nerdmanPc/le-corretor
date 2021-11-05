@@ -5,6 +5,7 @@
 
 import sys, os
 from typing import Optional, Tuple, Union, List
+from tests.data_base import DataBase
 
 MAXNSIMBOLOS = 16
 FILE_PATH = 'dict.dat'
@@ -43,10 +44,14 @@ def type_word() -> str:
         data_base.count_word(typed_word)
         return typed_word
     
+def print_freq_words():
+    data_base = DataBase(FILE_PATH)
+    print(data_base)
 
-def print_freq_words(): pass
-
-def print_freq_after(): pass
+def print_freq_after():
+    data_base = DataBase(FILE_PATH)
+    first = input()
+    print(data_base.following_str(first))
 
 def exit_shell():
     sys.exit(0)
