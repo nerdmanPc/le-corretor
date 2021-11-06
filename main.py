@@ -12,9 +12,9 @@ FILE_PATH = 'trie.dat'
 DICT_PATH = 'dict.dat'
 
 
-def insert_words():
+def insert_words(n_words: int):
     data_base = DataBase(FILE_PATH, DICT_PATH)
-    n_words = int(input())
+    #n_words = int(input())
     for i in range(n_words):
         word = input()
         data_base.insert_word(word)
@@ -33,8 +33,9 @@ def type_word() -> str:
     data_base = DataBase(FILE_PATH, DICT_PATH)
     typed_word = input()
     match_result = data_base.match_word(typed_word)
+    print('match_result:', match_result)
     # match_result = None, se a palavra esta correta ou match_result = lista de alternativas, se a palavra esta errada
-    if match_result is not None:     
+    if match_result is not None:
         suggestions = ' '.join(match_result)
         print(f'palavra desconhecida - possiveis correcoes: {suggestions}')
         correct_word = input()
@@ -57,4 +58,19 @@ def print_freq_after():
 
 def exit_shell():
     sys.exit(0)
-    
+
+#Loop principal que processa os comandos
+entry = input()
+while entry != 'e':
+    if(entry == 'i'):
+        n_words = int(input())
+        insert_words(n_words)
+    elif(entry == 'd'):
+        type_word()
+    elif(entry == 'f'):
+        print_freq_words()
+    elif(entry == 'p'):
+        print_freq_after()
+    #print('prox. comando: ', end='')
+    entry = input()
+exit_shell()
