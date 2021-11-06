@@ -6,19 +6,21 @@ from struct import Struct
 
 class DataBase:
     header_format = Struct('> L L')  #Header(length: uint32, root: uint32)
-    def __init__(self, file_path: str):
-        self._path = file_path
+    
+    def __init__(self, trie_path: str, dict_path: str):
+        self._trie_path = trie_path
+        self._dict_path = dict_path
         try:
-            with open(file_path, 'xb') as file:
-                logging.info(f'Inicializou arquivo vazio em: "{file_path}"')
+            with open(trie_path, 'xb') as file:
+                logging.info(f'Inicializou arquivo vazio em: "{trie_path}"')
                 self._length = 0
                 self._root = 0
                 file.write(self.header_format.pack(self._length, self._root))
             new_root = self._append_node(Node.new_empty())
             self._set_root(new_root)
         except FileExistsError:
-            with open(file_path, "rb") as file:
-                logging.info(f'Abriu arquivo salvo em: "{file_path}"')
+            with open(trie_path, "rb") as file:
+                logging.info(f'Abriu arquivo salvo em: "{trie_path}"')
                 header = file.read(self._header_size())
                 (length, root) = self.header_format.unpack(header)
                 self._length = length
@@ -57,13 +59,13 @@ class DataBase:
         return header_size + index * node_size
 
     def _set_length(self, length: int) -> None:
-        with open(self._path, 'r+b') as file:
+        with open(self._trie_path, 'r+b') as file:
             file.seek(0, 0)
             self._length = length
             file.write(self.header_format.pack(length, self._root))
 
     def _set_root(self, root: int) -> None:
-        with open(self._path, 'r+b') as file:
+        with open(self._trie_path, 'r+b') as file:
             file.seek(0, 0)
             self._root = root
             file.write(self.header_format.pack(self._length, root))
@@ -71,7 +73,7 @@ class DataBase:
     def _load_node(self, index: int) -> Node:
         if index >= self._length: print(f'INDICE INVALIDO: {index}')
         load_position = self._index_to_ptr(index)
-        with open(self._path, 'rb') as file:
+        with open(self._trie_path, 'rb') as file:
             file.seek(load_position, 0)
             data = file.read(Node.size())
             node = Node.from_bytes(data)
@@ -80,7 +82,7 @@ class DataBase:
     def _store_node(self, node: Node, index: int) -> None:
         if index > self._length: print(f'INDICE INVALIDO: {index}')
         store_position = self._index_to_ptr(index)
-        with open(self._path, 'r+b') as file:
+        with open(self._trie_path, 'r+b') as file:
             file.seek(store_position, 0)
             data = node.into_bytes()
             file.write(data)

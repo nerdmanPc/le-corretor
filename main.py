@@ -8,17 +8,19 @@ from typing import Optional, Tuple, Union, List
 from tests.data_base import DataBase
 
 MAXNSIMBOLOS = 16
-FILE_PATH = 'dict.dat'
+FILE_PATH = 'trie.dat'
+DICT_PATH = 'dict.dat'
+
 
 def insert_words():
-    data_base = DataBase(FILE_PATH)
+    data_base = DataBase(FILE_PATH, DICT_PATH)
     n_words = int(input())
     for i in range(n_words):
         word = input()
         data_base.insert_word(word)
 
 def type_following(first_word: str) -> str:
-    data_base = DataBase(FILE_PATH)
+    data_base = DataBase(FILE_PATH, DICT_PATH)
     following_list = data_base.match_following(first_word)
     following_list = ' '.join(following_list)
     print(f'proximas palavras: {following_list}')
@@ -28,7 +30,7 @@ def type_following(first_word: str) -> str:
 
 
 def type_word() -> str:
-    data_base = DataBase(FILE_PATH)
+    data_base = DataBase(FILE_PATH, DICT_PATH)
     typed_word = input()
     match_result = data_base.match_word(typed_word)
     # match_result = None, se a palavra esta correta ou match_result = lista de alternativas, se a palavra esta errada
@@ -45,11 +47,11 @@ def type_word() -> str:
         return typed_word
     
 def print_freq_words():
-    data_base = DataBase(FILE_PATH)
+    data_base = DataBase(FILE_PATH, DICT_PATH)
     print(data_base)
 
 def print_freq_after():
-    data_base = DataBase(FILE_PATH)
+    data_base = DataBase(FILE_PATH, DICT_PATH)
     first = input()
     print(data_base.following_str(first))
 
