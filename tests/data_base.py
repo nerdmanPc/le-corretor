@@ -12,15 +12,15 @@ class DataBase:
         self._dict_path = dict_path
         try:
             with open(trie_path, 'xb') as file:
-                logging.info(f'Inicializou arquivo vazio em: "{trie_path}"')
+                #logging.info(f'Inicializou arquivo vazio em: "{trie_path}"')
                 self._length = 0
                 self._root = 0
                 file.write(self.header_format.pack(self._length, self._root))
-            new_root = self._append_node(Node.new_empty())
-            self._set_root(new_root)
+            #new_root = self._append_node(Node.new_empty())
+            #self._set_root(new_root)
         except FileExistsError:
             with open(trie_path, "rb") as file:
-                logging.info(f'Abriu arquivo salvo em: "{trie_path}"')
+                #logging.info(f'Abriu arquivo salvo em: "{trie_path}"')
                 header = file.read(self._header_size())
                 (length, root) = self.header_format.unpack(header)
                 self._length = length
@@ -39,8 +39,9 @@ class DataBase:
     def count_following(self, first: str, following: str):
         logging.info(f'Contou sequencia: "{first}" -> "{following}"')
 
-    def match_following(self, first: str):
+    def match_following(self, first: str) -> List[str]:
         logging.info(f'Buscou sequencias a partir de "{first}"')
+        return []
 
     def __str__(self) -> str:
         return '<Lista de palavras e frequencias>'
