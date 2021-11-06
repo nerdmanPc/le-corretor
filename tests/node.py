@@ -96,6 +96,10 @@ class Node:
     def size(cls) -> int:
         return cls.header_format.size + 2*ChildHandle.size()
 
+    def is_prefix(self, word: str) -> bool:
+        logging.info(f'Checa se "{self._letter}" é prefixo de "{word}".')
+        return False
+
     def set_left(self, new_left: ChildHandle):
         self._left = new_left
 
