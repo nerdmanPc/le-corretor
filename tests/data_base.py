@@ -49,6 +49,43 @@ class DataBase:
     def following_str(self, first: str) -> str:
         return '<Lista de palavras e frequencias a partir de "{}">'.format(first)
 
+    def _internal_search(self, word: str, node_index: int, distance: int) -> List[int]:
+
+        if distance < 0:
+            return []
+        search_result = []
+        node = self._load_node(node_index)
+        #after_prefix = node.take_prefix(word)
+        left_child = node.left()
+        right_child = node.right()
+
+        #if node.is_prefix(word):
+        if left_child.is_internal():
+            left_index = left_child.index()
+            if node.is_prefix(word):
+                after_prefix = node.take_prefix_from(word)
+                next_result = self._internal_search(after_prefix, left_index, distance)
+                search_result.extend(next_result)
+            else:
+                after_prefix = word[node.prefix_size():]
+                new_distance = distance - node.prefix_size()
+                next_result = self._internal_search(after_prefix, left_index, new_distance)
+                search_result.extend(next_result)
+        elif left_child.is_word():
+            after_prefix = node.take_prefix_from(word)
+            if after_prefix == '':
+                search_result.append(left_child.index())
+
+        if right_child.is_internal():
+            right_index = right_child.index()
+            next_result = self._internal_search(word, right_index, distance)
+            search_result.extend(next_result)
+        elif right_child.is_word():
+            if word == '':
+                search_result.append(right_child.index())
+        
+        return search_result
+        
     @classmethod
     def _header_size(cls) -> int:
         return cls.header_format.size
@@ -64,6 +101,9 @@ class DataBase:
             file.seek(0, 0)
             self._length = length
             file.write(self.header_format.pack(length, self._root))
+
+    def empty(self) -> bool:
+        return self._length == 0
 
     def _set_root(self, root: int) -> None:
         with open(self._trie_path, 'r+b') as file:

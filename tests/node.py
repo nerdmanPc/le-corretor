@@ -59,6 +59,21 @@ class ChildHandle:
     def new_word(cls, index: int): # -> ChildHandle
         return cls(ChildType.WORD, index)
 
+    def is_empty(self) -> bool: 
+        return self._type == ChildType.NONE
+
+    def is_internal(self) -> bool: 
+        return self._type == ChildType.INTERNAL
+
+    def is_word(self) -> bool: 
+        return self._type == ChildType.WORD
+
+    def index(self) -> Optional[int]:
+        if self._type != ChildType.NONE: 
+            return self._index
+        else:
+            return None
+
     @classmethod 
     def from_bytes(cls, data: bytes): # -> ChildHandle
         logging.info(f'Deserializando ponteiro para filho.')
@@ -99,6 +114,14 @@ class Node:
     def is_prefix(self, word: str) -> bool:
         logging.info(f'Checa se "{self._letter}" é prefixo de "{word}".')
         return False
+
+    def take_prefix_from(self, word: str) -> str:
+        logging.info(f'Tira prefixo "{self._letter}" de "{word}".')
+        #return ''
+
+    def prefix_size(self) -> int:
+        logging.info(f'Checa tamanho de "{self._letter}".')
+        #return 0
 
     def set_left(self, new_left: ChildHandle):
         self._left = new_left
