@@ -28,3 +28,6 @@ class Word:
     def size(cls) -> int:
         logging.info(f'Calculando tamanho do registro.') 
         return 0
+
+class Dictionary:
+    pass
