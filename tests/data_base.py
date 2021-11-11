@@ -1,7 +1,8 @@
 import logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(format = '%(levelname)s: %(message)s', level = logging.DEBUG)
+
 from typing import List, Optional, Tuple, Union
-from tests.node import Node, Word
+from tests.node import Node
 from struct import Struct
 
 class DataBase:

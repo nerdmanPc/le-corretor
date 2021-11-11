@@ -1,5 +1,5 @@
 import logging
-logging.basicConfig(level = logging.DEBUG)
+logging.basicConfig(format = '%(levelname)s: %(message)s', level = logging.DEBUG)
 
 from typing import List, Dict, Optional
 from struct import Struct
@@ -65,18 +65,18 @@ class Node:
     header_format = Struct('> c')
 
     def __init__(self, prefix: str, left: ChildHandle, right: ChildHandle) -> None:
-        logging.info(f'Inicializando "node" (letra: {prefix}, filho: {left}, irmao: {right}).')
+        #logging.info(f'Inicializando "node" (letra: {prefix}, filho: {left}, irmao: {right}).')
         self._prefix = prefix
         self._left = left
         self._right = right
 
     @classmethod
-    def from_letter(cls, letter: str):
-        logging.info(f'Inicializando node com letra "{letter}".')
-        return cls(letter, None, None)
+    def from_prefix(cls, prefix: str):
+        logging.info(f'Inicializando node com letra "{prefix}".')
+        return cls(prefix, None, None)
 
     @classmethod 
-    def from_bytes(cls, data: bytes): #-> Entry
+    def from_bytes(cls, data: bytes): #-> Node
         logging.info(f'Deserializando node.')
 
     def into_bytes(self) -> bytes:
@@ -88,7 +88,7 @@ class Node:
 
     def is_prefix(self, word: str) -> bool:
         logging.info(f'Checa se "{self._prefix}" é prefixo de "{word}".')
-        return False
+        #return False
 
     def take_prefix_from(self, word: str) -> str:
         logging.info(f'Tira prefixo "{self._prefix}" de "{word}".')

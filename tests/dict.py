@@ -1,7 +1,8 @@
 import logging
-logging.basicConfig(level = logging.DEBUG)
+logging.basicConfig(format = '%(levelname)s: %(message)s', level = logging.DEBUG)
 
 from struct import Struct
+from typing import List, Dict
 
 class Word:
     format = Struct('')
@@ -30,4 +31,10 @@ class Word:
         return 0
 
 class Dictionary:
+    #Esta classe eh similar ao DataBase, mas registra apenas uma vetor
+    # de palavras. Cada registro deve conter:
+    #   string da palavra
+    #   frequencia de digitacao
+    #   tres pares referentes ah propostas de sequência, da forma:
+    #       (indice, frequencia)
     pass
