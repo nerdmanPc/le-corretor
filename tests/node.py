@@ -51,10 +51,13 @@ class ChildHandle:
 
     @classmethod 
     def from_bytes(cls, data: bytes): # -> ChildHandle
-        logging.info(f'Deserializando ponteiro para filho.')
+        #logging.info(f'Deserializando ponteiro para filho.')
+        (type, index) = cls.format.unpack(data)
+        return ChildHandle(type, index)
 
     def into_bytes(self) -> bytes:
-        logging.info(f'Serializando ponteiro para filho.')
+        #logging.info(f'Serializando ponteiro para filho.')
+        return self.format.pack(self._type, self._index)
 
     @classmethod
     def size(cls) -> int:
@@ -63,6 +66,7 @@ class ChildHandle:
 # LAYOUT NO ARQUIVO [char, ChildHandle, ChildHandle]
 class Node:
     header_format = Struct('> c')
+    header_size = header_format.size
 
     def __init__(self, prefix: str, left: ChildHandle, right: ChildHandle) -> None:
         #logging.info(f'Inicializando "node" (letra: {prefix}, filho: {left}, irmao: {right}).')
@@ -77,10 +81,15 @@ class Node:
 
     @classmethod 
     def from_bytes(cls, data: bytes): #-> Node
-        logging.info(f'Deserializando node.')
+        #logging.info(f'Deserializando node.')
+        (prefix, left, right) = cls.format.unpack(data)
+        return Entry(prefix, left, right)
 
     def into_bytes(self) -> bytes:
-        logging.info(f'Serializando node.')
+        #logging.info(f'Serializando node.')
+        data = bytearray(self.size())
+        #data[:self.header_size] = self.header_format.pack(self._prefix, self._left, self._right)
+        return #self.format.pack(self._prefix, self._left, self._right)
 
     @classmethod
     def size(cls) -> int:
