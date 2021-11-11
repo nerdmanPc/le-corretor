@@ -6,31 +6,6 @@ from struct import Struct
 from enum import Enum
 #Registro de fim de palavra
 
-class Word:
-    format = Struct('')
-
-    def __init__(self, frequency: int, sequencies: List[Dict]) -> None:
-        logging.info(f'Inicializando registro (frequencia: {frequency}, sequencias: {sequencies}).')
-        self._frequency = frequency
-        self._sequencies = sequencies
-
-    @classmethod
-    def new_empty(cls): # -> Word
-        logging.info(f'Criando registro vazio.')
-        return cls(0, [])
-
-    @classmethod 
-    def from_bytes(cls, data: bytes): #-> Entry
-        logging.info(f'Deserializando registro.')
-
-    def into_bytes(self) -> bytes:
-        logging.info(f'Serializando registro.')
-        return bytes()
-
-    @classmethod
-    def size(cls) -> int:
-        logging.info(f'Calculando tamanho do registro.') 
-        return 0
 
 class ChildType(Enum):
     NONE = 0
@@ -89,9 +64,9 @@ class ChildHandle:
 class Node:
     header_format = Struct('> c')
 
-    def __init__(self, letter: str, left: ChildHandle, right: ChildHandle) -> None:
-        logging.info(f'Inicializando "node" (letra: {letter}, filho: {left}, irmao: {right}).')
-        self._letter = letter
+    def __init__(self, prefix: str, left: ChildHandle, right: ChildHandle) -> None:
+        logging.info(f'Inicializando "node" (letra: {prefix}, filho: {left}, irmao: {right}).')
+        self._prefix = prefix
         self._left = left
         self._right = right
 
@@ -112,15 +87,15 @@ class Node:
         return cls.header_format.size + 2*ChildHandle.size()
 
     def is_prefix(self, word: str) -> bool:
-        logging.info(f'Checa se "{self._letter}" é prefixo de "{word}".')
+        logging.info(f'Checa se "{self._prefix}" é prefixo de "{word}".')
         return False
 
     def take_prefix_from(self, word: str) -> str:
-        logging.info(f'Tira prefixo "{self._letter}" de "{word}".')
+        logging.info(f'Tira prefixo "{self._prefix}" de "{word}".')
         #return ''
 
     def prefix_size(self) -> int:
-        logging.info(f'Checa tamanho de "{self._letter}".')
+        logging.info(f'Checa tamanho de "{self._prefix}".')
         #return 0
 
     def set_left(self, new_left: ChildHandle):
