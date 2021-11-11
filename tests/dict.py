@@ -1,6 +1,8 @@
 import logging
 logging.basicConfig(level = logging.DEBUG)
 
+from struct import Struct
+
 class Word:
     format = Struct('')
 
