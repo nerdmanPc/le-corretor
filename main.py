@@ -13,7 +13,6 @@ MAXNSIMBOLOS = 16
 FILE_PATH = 'trie.dat'
 DICT_PATH = 'dict.dat'
 
-
 def insert_words():
     data_base = DataBase(FILE_PATH, DICT_PATH)
     logging.info('Digite o numero de palavras:')
