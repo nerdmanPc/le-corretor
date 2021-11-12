@@ -2,7 +2,9 @@ import logging
 logging.basicConfig(format = '%(levelname)s: %(message)s', level = logging.DEBUG)
 
 from typing import List, Optional, Tuple, Union
-from tests.node import Node
+from queue import PriorityQueue
+from tests.node import ChildHandle, Node
+from tests.dict import Dictionary, Word
 from struct import Struct
 
 class DataBase:
@@ -10,7 +12,8 @@ class DataBase:
     
     def __init__(self, trie_path: str, dict_path: str):
         self._trie_path = trie_path
-        self._dict_path = dict_path
+        self._dict = Dictionary(dict_path)
+        self._prev_index = None
         try:
             with open(trie_path, 'xb') as file:
                 #logging.info(f'Inicializou arquivo vazio em: "{trie_path}"')
@@ -31,14 +34,36 @@ class DataBase:
         logging.info(f'Inseriu palavra "{word}"')
         
     def count_word(self, word: str):
-        logging.info(f'Contou digitacao de "{word}"')
+        search_result = self._internal_search(word, self._root, 0)[0]
+        word_index = search_result.index()
+        self._dict.count_typing(word_index)
+        self._dict.count_sequence(word_index, self._prev_index)
+        self._set_prev_index(word_index)
+        #logging.info(f'Contou digitacao de "{word}"')
 
-    def match_word(self, word: str) -> Optional[List[str]]:
-        logging.info(f'Buscou palavra "{word}"')
-        return None
+    def match_word(self, word_entry: str) -> Optional[List[str]]:
+        logging.info(f'Buscou palavra "{word_entry}"')
+        sorted_queue = PriorityQueue()
+        exact_match = self._internal_search(word_entry, self._root, 0)
+        if len(exact_match) == 1: #palavra esta correta
+            return None
+        approx_match = self._internal_search(word_entry, self._root, 1)
+        for word_handle in approx_match:
+            word_index = word_handle.index()
+            #word_entry = self._dict._load_word(word_index)
+            sorted_queue.put(self._dict.str_form_index(word_index))
+            #if len(result >= 3):
+            #    return result
+        result = []
+        for i in range(3):
+            if sorted_queue.empty():
+                break
+            next_word = sorted_queue.get()
+            result.append(next_word)
+        return result
 
-    def count_following(self, first: str, following: str):
-        logging.info(f'Contou sequencia: "{first}" -> "{following}"')
+    #def count_following(self, first: str, following: str):
+    #    logging.info(f'Contou sequencia: "{first}" -> "{following}"')
 
     def match_following(self, first: str) -> List[str]:
         logging.info(f'Buscou sequencias a partir de "{first}"')
@@ -50,17 +75,17 @@ class DataBase:
     def following_str(self, first: str) -> str:
         return '<Lista de palavras e frequencias a partir de "{}">'.format(first)
 
-    def _internal_search(self, word: str, node_index: int, distance: int) -> List[int]:
+    def _internal_search(self, word: str, node_index: int, distance: int) -> List[ChildHandle]:
 
         if distance < 0:
             return []
+        if self.empty():
+            return []
         search_result = []
         node = self._load_node(node_index)
-        #after_prefix = node.take_prefix(word)
         left_child = node.left()
         right_child = node.right()
 
-        #if node.is_prefix(word):
         if left_child.is_internal():
             left_index = left_child.index()
             if node.is_prefix(word):
@@ -75,7 +100,7 @@ class DataBase:
         elif left_child.is_word():
             after_prefix = node.take_prefix_from(word)
             if after_prefix == '':
-                search_result.append(left_child.index())
+                search_result.append(left_child)
 
         if right_child.is_internal():
             right_index = right_child.index()
@@ -83,8 +108,7 @@ class DataBase:
             search_result.extend(next_result)
         elif right_child.is_word():
             if word == '':
-                search_result.append(right_child.index())
-        
+                search_result.append(right_child)
         return search_result
         
     @classmethod
@@ -102,6 +126,9 @@ class DataBase:
             file.seek(0, 0)
             self._length = length
             file.write(self.header_format.pack(length, self._root))
+
+    def _set_prev_index(self, prev_index: int):
+        self._prev_index = prev_index
 
     def empty(self) -> bool:
         return self._length == 0
