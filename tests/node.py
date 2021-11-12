@@ -53,11 +53,11 @@ class ChildHandle:
     def from_bytes(cls, data: bytes): # -> ChildHandle
         #logging.info(f'Deserializando ponteiro para filho.')
         (type, index) = cls.format.unpack(data)
-        return ChildHandle(type, index)
+        return ChildHandle( ChildType(type) , index) 
 
     def into_bytes(self) -> bytes:
         #logging.info(f'Serializando ponteiro para filho.')
-        return self.format.pack(self._type, self._index)
+        return self.format.pack(self._type.value, self._index) 
 
     @classmethod
     def size(cls) -> int:
@@ -82,15 +82,15 @@ class Node:
     @classmethod 
     def from_bytes(cls, data: bytes): #-> Node
         #logging.info(f'Deserializando node.')
-        (prefix, left, right) = cls.format.unpack(data[:cls.header_size])
-        #TODO ainda falta coisa aqui:
+        (prefix) = cls.header_format.unpack(data[:cls.header_size])
+        #TODO Chamar ChildHandle.from_bytes() para criar o nó esquerdo e direito
         return Node(prefix, left, right)
 
     def into_bytes(self) -> bytes:
         #logging.info(f'Serializando node.')
         data = bytearray(self.size())
-        data[:self.header_size] = self.header_format.pack(self._prefix, self._left, self._right)
-        #TODO talvez ainda falte coisa aqui!
+        data[:self.header_size] = self.header_format.pack(self._prefix)
+        #TODO Chamar ChildHandle.into_bytes() para serializar os nós esquerdo e direito
         return bytes(data)
 
     @classmethod
