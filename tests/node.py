@@ -82,18 +82,20 @@ class Node:
     @classmethod 
     def from_bytes(cls, data: bytes): #-> Node
         #logging.info(f'Deserializando node.')
-        (prefix, left, right) = cls.format.unpack(data)
-        return Entry(prefix, left, right)
+        (prefix, left, right) = cls.format.unpack(data[:cls.header_size])
+        #TODO ainda falta coisa aqui:
+        return Node(prefix, left, right)
 
     def into_bytes(self) -> bytes:
         #logging.info(f'Serializando node.')
         data = bytearray(self.size())
-        #data[:self.header_size] = self.header_format.pack(self._prefix, self._left, self._right)
-        return #self.format.pack(self._prefix, self._left, self._right)
+        data[:self.header_size] = self.header_format.pack(self._prefix, self._left, self._right)
+        #TODO talvez ainda falte coisa aqui!
+        return bytes(data)
 
     @classmethod
     def size(cls) -> int:
-        return cls.header_format.size + 2*ChildHandle.size()
+        return cls.header_format.size + 2 * ChildHandle.size()
 
     def is_prefix(self, word: str) -> bool:
         logging.info(f'Checa se "{self._prefix}" é prefixo de "{word}".')
