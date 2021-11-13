@@ -76,13 +76,16 @@ class Node:
 
     @classmethod
     def from_prefix(cls, prefix: str):
-        logging.info(f'Inicializando node com letra "{prefix}".')
+        #logging.info(f'Inicializando node com letra "{prefix}".')
         return cls(prefix, None, None)
 
     @classmethod 
     def from_bytes(cls, data: bytes): #-> Node
         #logging.info(f'Deserializando node.')
         (prefix) = cls.header_format.unpack(data[:cls.header_size])
+        ptr = ChildHandle.size()
+        left = ChildHandle.from_bytes(data[cls.header_size:ptr])
+        right = ChildHandle.from_bytes(data[cls.header_size+ptr:])
         #TODO Chamar ChildHandle.from_bytes() para criar o nó esquerdo e direito
         return Node(prefix, left, right)
 
@@ -90,6 +93,9 @@ class Node:
         #logging.info(f'Serializando node.')
         data = bytearray(self.size())
         data[:self.header_size] = self.header_format.pack(self._prefix)
+        ptr = ChildHandle.size()
+        data[self.header_size:ptr] = ChildHandle.into_bytes(self._left)
+        data[self.header_size+ptr:] = ChildHandle.into_bytes(self._right)
         #TODO Chamar ChildHandle.into_bytes() para serializar os nós esquerdo e direito
         return bytes(data)
 
@@ -98,15 +104,21 @@ class Node:
         return cls.header_format.size + 2 * ChildHandle.size()
 
     def is_prefix(self, word: str) -> bool:
-        logging.info(f'Checa se "{self._prefix}" é prefixo de "{word}".')
-        #return False
+        #logging.info(f'Checa se "{self._prefix}" é prefixo de "{word}".')
+        if word.startswith(self._prefix):
+            return True
+        return False
 
     def take_prefix_from(self, word: str) -> str:
-        logging.info(f'Tira prefixo "{self._prefix}" de "{word}".')
-        #return ''
+        #logging.info(f'Tira prefixo "{self._prefix}" de "{word}".')
+        ptr = prefix_size()
+        if is_prefix(word):
+            return word[ptr:]
+        return ''
 
     def prefix_size(self) -> int:
-        logging.info(f'Checa tamanho de "{self._prefix}".')
+        #logging.info(f'Checa tamanho de "{self._prefix}".')
+        return len(self._prefix)
         #return 0
 
     def set_left(self, new_left: ChildHandle):
