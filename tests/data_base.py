@@ -42,7 +42,7 @@ class DataBase:
         #logging.info(f'Contou digitacao de "{word}"')
 
     def match_word(self, word_entry: str) -> Optional[List[str]]:
-        logging.info(f'Buscou palavra "{word_entry}"')
+        #logging.info(f'Buscou palavra "{word_entry}"')
         sorted_queue = PriorityQueue()
         exact_match = self._internal_search(word_entry, self._root, 0)
         if len(exact_match) == 1: #palavra esta correta
@@ -70,7 +70,7 @@ class DataBase:
         return []
 
     def __str__(self) -> str:
-        return '<Lista de palavras e frequencias>'
+        return str(self._dict)
 
     def following_str(self, first: str) -> str:
         return '<Lista de palavras e frequencias a partir de "{}">'.format(first)
