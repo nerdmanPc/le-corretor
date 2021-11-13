@@ -4,7 +4,7 @@ logging.basicConfig(format = '%(levelname)s: %(message)s', level = logging.DEBUG
 from typing import List, Optional, Tuple, Union
 from queue import PriorityQueue
 from tests.node import ChildHandle, Node
-from tests.dict import Dictionary, Word
+from tests.dict import Dictionary, WordEntry
 from struct import Struct
 
 class DataBase:
@@ -18,7 +18,7 @@ class DataBase:
             with open(trie_path, 'xb') as file:
                 #logging.info(f'Inicializou arquivo vazio em: "{trie_path}"')
                 self._length = 0
-                self._root = 0
+                self._root = -1
                 file.write(self.header_format.pack(self._length, self._root))
             #new_root = self._append_node(Node.new_empty())
             #self._set_root(new_root)
@@ -31,7 +31,12 @@ class DataBase:
                 self._root = root
     
     def insert_word(self, word: str):
-        logging.info(f'Inseriu palavra "{word}"')
+        search_result = self._internal_search(word, self._root, 0)
+        if len(search_result) > 0:
+            return
+        new_index = self._dict.add_entry(word)
+        self._internal_insert(word, new_index, self._root)
+        #logging.info(f'Inseriu palavra "{word}"')
         
     def count_word(self, word: str):
         search_result = self._internal_search(word, self._root, 0)[0]
@@ -109,6 +114,52 @@ class DataBase:
         elif right_child.is_word():
             if word == '':
                 search_result.append(right_child)
+        return search_result
+
+    def _internal_insert(self, word: str, word_index: int, node_index: int) -> bool: 
+
+        if self.empty():
+            self.
+            return True
+
+        #search_result = (node_index, word)
+        node = self._load_node(node_index)
+        after_prefix = node.take_prefix_from(word)
+        left_child = node.left()
+        right_child = node.right()
+
+        if left_child.is_internal():
+            left_index = left_child.index()
+            if node.is_prefix(word):
+                #after_prefix = node.take_prefix_from(word)
+                return self._internal_insert(after_prefix, left_index)
+                #next_result = self._internal_search(after_prefix, left_index, distance)
+                #search_result.extend(next_result)
+            #else:
+            #    after_prefix = word[node.prefix_size():]
+            #    new_distance = distance - node.prefix_size()
+            #    next_result = self._internal_search(after_prefix, left_index, new_distance)
+            #    search_result.extend(next_result)
+        elif left_child.is_word():
+            #after_prefix = node.take_prefix_from(word)
+            if after_prefix == '':
+                return (-1, '')
+                #search_result.append(left_child)
+        elif left_child.is_empty():
+            return (node_index, after_prefix)
+
+        if right_child.is_internal():
+            right_index = right_child.index()
+            return self._internal_insert(word, right_index)
+            #next_result = self._internal_search(word, right_index, distance)
+            #search_result.extend(next_result)
+        elif right_child.is_word():
+            if word == '':
+                return (-1, '')
+                #search_result.append(right_child)
+        elif right_child.is_empty():
+            logging.info(f'Insere {word} à esquerda de {node_index}')
+        
         return search_result
         
     @classmethod

@@ -4,18 +4,19 @@ logging.basicConfig(format = '%(levelname)s: %(message)s', level = logging.DEBUG
 from struct import Struct
 from typing import List, Dict
 
-class Word:
+class WordEntry:
     format = Struct('')
 
-    def __init__(self, frequency: int, sequencies: List[Dict]) -> None:
+    def __init__(self, word: str, frequency: int, sequencies: List[Dict]) -> None:
         logging.info(f'Inicializando registro (frequencia: {frequency}, sequencias: {sequencies}).')
+        self._word = word
         self._frequency = frequency
         self._sequencies = sequencies
 
     @classmethod
-    def new_empty(cls): # -> Word
+    def from_str(cls, word: str): # -> Word
         logging.info(f'Criando registro vazio.')
-        return cls(0, [])
+        return cls(word, 0, [])
 
     @classmethod 
     def from_bytes(cls, data: bytes): #-> Entry
@@ -52,12 +53,6 @@ class Dictionary:
                 (length) = self.header_format.unpack(data)
                 self._length = length
 
-    def append_entry(self, to_append: Word) -> int:
-        new_index = self._length
-        self._store_entry(to_append, new_index)
-        self._set_length(self._length + 1)
-        return new_index
-
     def count_typing(self, word_index: int):
         logging.info(f'Contou digitacao de "{word_index}"')
 
@@ -66,6 +61,10 @@ class Dictionary:
 
     def word_from_index(self, word_index: int) -> str:
         logging.info(f'Consulta string do índice "{word_index}"')
+
+    def add_word(self, word: str) -> int:
+        new_entry = WordEntry.from_str(word)
+        return self._append_entry(new_entry)
 
     def __str__(self) -> str:
         return '<Lista de palavras e frequencias>'
@@ -78,7 +77,7 @@ class Dictionary:
 
     @classmethod
     def _index_to_ptr(cls, index: int) -> int:
-        entry_size = Word.size()
+        entry_size = WordEntry.size()
         header_size = cls.header_size
         return header_size + index * entry_size
 
@@ -88,16 +87,22 @@ class Dictionary:
             self._length = length
             file.write(self.header_format.pack(length))
 
-    def _load_entry(self, index: int) -> Word:
+    def _append_entry(self, to_append: WordEntry) -> int:
+        new_index = self._length
+        self._store_entry(to_append, new_index)
+        self._set_length(self._length + 1)
+        return new_index
+
+    def _load_entry(self, index: int) -> WordEntry:
         if index >= self._length: print(f'INDICE INVALIDO: {index}')
         load_position = self._index_to_ptr(index)
         with open(self._dict_path, 'rb') as file:
             file.seek(load_position, 0)
-            data = file.read(Word.size())
-            entry = Word.from_bytes(data)
+            data = file.read(WordEntry.size())
+            entry = WordEntry.from_bytes(data)
             return entry
 
-    def _store_entry(self, entry: Word, index: int) -> None:
+    def _store_entry(self, entry: WordEntry, index: int) -> None:
         if index > self._length: print(f'INDICE INVALIDO: {index}')
         store_position = self._index_to_ptr(index)
         with open(self._dict_path, 'r+b') as file:
