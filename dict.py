@@ -5,9 +5,9 @@ from queue import PriorityQueue
 from struct import Struct
 from typing import List, Dict
 
-class WordFreq:
-    def __init__(self, word_index: int, frequency: int) -> None:
-        self.
+#class WordFreq:
+#    def __init__(self, word_index: int, frequency: int) -> None:
+#        self.
 
 class WordEntry:
     format = Struct('> s30 L s30 L s30 L s30 L')
