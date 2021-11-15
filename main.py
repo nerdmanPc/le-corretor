@@ -49,6 +49,7 @@ def type_word() -> Tuple[bool, str]:
         correct_word = input()
         if correct_word == typed_word:
             data_base.insert_word(correct_word)
+            return (False, typed_word)
         data_base.count_word(correct_word)
         return (True, correct_word)
     else:
@@ -76,6 +77,7 @@ while entry != 'e':
         insert_words()
     elif(entry == 'd'):
         (shoud_type_following, correct_first) = type_word()
+        #logging.debug(f'main loop: should_type_following: {shoud_type_following}, correct_first: {correct_first}')
         if shoud_type_following:
             type_following(correct_first)
     elif(entry == 'f'):

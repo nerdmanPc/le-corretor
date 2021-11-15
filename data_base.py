@@ -41,7 +41,8 @@ class DataBase:
         search_result = self._internal_search(word, self._root, 0)[0]
         word_index = search_result.index()
         self._dict.count_typing(word_index)
-        self._dict.count_sequence(word_index, self._prev_index)
+        if self._prev_index is not None:
+            self._dict.count_sequence(word_index, self._prev_index)
         self._set_prev_index(word_index)
         #logging.info(f'Contou digitacao de "{word}"')
 
@@ -74,8 +75,14 @@ class DataBase:
     #    logging.info(f'Contou sequencia: "{first}" -> "{following}"')
 
     def match_following(self, first: str) -> List[str]:
-        logging.info(f'Buscou sequencias a partir de "{first}"')
-        return []
+        #logging.info(f'Buscou sequencias a partir de "{first}"')
+        #TODO refatorar essa desgraceira
+        first_index = self._internal_search(first, self._root, 0)[0]
+        entry = self._dict._load_entry(first_index.index)
+        result = []
+        for word, freq in entry._sequencies.items():
+            result.append(word)
+        return result
 
     def __str__(self) -> str:
         return str(self._dict)
