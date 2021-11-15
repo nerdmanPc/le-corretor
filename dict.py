@@ -5,9 +5,9 @@ from struct import Struct
 from typing import List, Dict
 
 class WordEntry:
-    format = Struct('')
+    format = Struct('> s30 L s30 L s30 L s30 L')
 
-    def __init__(self, word: str, frequency: int, sequencies: List[Dict]) -> None:
+    def __init__(self, word: str, frequency: int, sequencies: Dict) -> None:
         logging.info(f'Inicializando registro (frequencia: {frequency}, sequencias: {sequencies}).')
         self._word = word
         self._frequency = frequency
@@ -15,21 +15,44 @@ class WordEntry:
 
     @classmethod
     def from_str(cls, word: str): # -> Word
-        logging.info(f'Criando registro da palavra "{word}".')
+        #logging.info(f'Criando registro da palavra "{word}".')
         return cls(word, 0, [])
 
     @classmethod 
     def from_bytes(cls, data: bytes): #-> Entry
+        (word, freq, sq_a, fq_a, sq_b, fq_b, sq_c, fq_c) = cls.format.unpack(data)
+        sequencies = {
+            sq_a: fq_a,
+            sq_b: fq_b,
+            sq_c: fq_c
+        }
+        return WordEntry(word, freq, sequencies)
+
         logging.info(f'Deserializando registro.')
 
     def into_bytes(self) -> bytes:
+        word = self._word
+        freq = self._frequency
+        fq_x = []
+        sq_x =[]
+        for sq, fq in self._sequencies.items():
+            sq_x.append(sq)
+            fq_x.append(fq)
+
+        data = self.format.pack(\
+            word, freq, \
+            sq_x[0], fq_x[0], \
+            sq_x[1], fq_x[1], \
+            sq_x[2], fq_x[2]\
+        )
+
         logging.info(f'Serializando registro.')
         return bytes()
 
     @classmethod
     def size(cls) -> int:
         logging.info(f'Calculando tamanho do registro.') 
-        return 0
+        return cls.format.size
 
 class Dictionary:
     header_format = Struct('> L')

@@ -7,7 +7,7 @@ import logging
 logging.basicConfig(format = '%(levelname)s: %(message)s', level = logging.DEBUG)
 import sys, os
 from typing import Optional, Tuple, Union, List
-from tests.data_base import DataBase
+from data_base import DataBase
 
 MAXNSIMBOLOS = 16
 FILE_PATH = 'trie.dat'

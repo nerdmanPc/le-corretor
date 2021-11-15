@@ -3,8 +3,8 @@ logging.basicConfig(format = '%(levelname)s: %(message)s', level = logging.DEBUG
 
 from typing import List, Optional, Tuple, Union
 from queue import PriorityQueue
-from tests.node import ChildHandle, Node
-from tests.dict import Dictionary, WordEntry
+from node import ChildHandle, Node
+from dict import Dictionary, WordEntry
 from struct import Struct
 
 class DataBase:
