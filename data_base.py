@@ -79,6 +79,7 @@ class DataBase:
         #TODO refatorar essa desgraceira
         first_index = self._internal_search(first, self._root, 0)[0]
         entry = self._dict._load_entry(first_index.index())
+        logging.debug(f'Em match_following({first}): indice={first_index}\nsequencias=({entry.following_str()})')
         result = []
         for word, freq in entry._sequencies.items():
             result.append(word)
