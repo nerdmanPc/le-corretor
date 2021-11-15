@@ -34,9 +34,9 @@ class WordEntry:
             sq_b: fq_b,
             sq_c: fq_c
         }
+        logging.info(f'Deserializando registro "{word}".')
         return WordEntry(word, freq, sequencies)
 
-        logging.info(f'Deserializando registro.')
 
     def into_bytes(self) -> bytes:
         word = self._word
@@ -58,19 +58,20 @@ class WordEntry:
         return bytes()
 
     def count_typing(self):
-        pass #TODO
+        logging.info(f'Contou digitacao de "{self._word}}"')
 
     def count_sequence(self, second_index: int):
-        pass #TODO
+        logging.info(f'Contou sequencia: "{self._word}" -> "{second_index}"')
 
     def word_str(self) -> str:
-        pass #TODO
+        return self._word
 
     def following_str(self) -> str:
+        return f'<sequencias de "{self._word}">'
         pass #TODO
 
     def __str__(self) -> str:
-         pas #TODO
+        return f'{self._word} {self._frequency}}'
 
     @classmethod
     def size(cls) -> int:
