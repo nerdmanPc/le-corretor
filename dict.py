@@ -58,7 +58,7 @@ class WordEntry:
         return bytes()
 
     def count_typing(self):
-        logging.info(f'Contou digitacao de "{self._word}}"')
+        logging.info(f'Contou digitacao de "{self._word}"')
 
     def count_sequence(self, second_index: int):
         logging.info(f'Contou sequencia: "{self._word}" -> "{second_index}"')
@@ -71,7 +71,7 @@ class WordEntry:
         pass #TODO
 
     def __str__(self) -> str:
-        return f'{self._word} {self._frequency}}'
+        return f'{self._word} {self._frequency}'
 
     @classmethod
     def size(cls) -> int:
