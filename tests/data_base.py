@@ -34,9 +34,8 @@ class DataBase:
         search_result = self._internal_search(word, self._root, 0)
         if len(search_result) > 0:
             return
-        new_index = self._dict.add_entry(word)
-        self._internal_insert(word, new_index, self._root)
-        #logging.info(f'Inseriu palavra "{word}"')
+        word_index = self._dict.add_entry(word)
+        self._internal_insert(word, word_index, self._root)
         
     def count_word(self, word: str):
         search_result = self._internal_search(word, self._root, 0)[0]
@@ -119,48 +118,34 @@ class DataBase:
     def _internal_insert(self, word: str, word_index: int, node_index: int) -> bool: 
 
         if self.empty():
-            self.
+            new_root = self._new_branch(word, word_index).index()
+            self._set_root(new_root)
             return True
-
-        #search_result = (node_index, word)
         node = self._load_node(node_index)
-        after_prefix = node.take_prefix_from(word)
         left_child = node.left()
         right_child = node.right()
 
-        if left_child.is_internal():
-            left_index = left_child.index()
-            if node.is_prefix(word):
-                #after_prefix = node.take_prefix_from(word)
-                return self._internal_insert(after_prefix, left_index)
-                #next_result = self._internal_search(after_prefix, left_index, distance)
-                #search_result.extend(next_result)
-            #else:
-            #    after_prefix = word[node.prefix_size():]
-            #    new_distance = distance - node.prefix_size()
-            #    next_result = self._internal_search(after_prefix, left_index, new_distance)
-            #    search_result.extend(next_result)
-        elif left_child.is_word():
-            #after_prefix = node.take_prefix_from(word)
-            if after_prefix == '':
-                return (-1, '')
-                #search_result.append(left_child)
-        elif left_child.is_empty():
-            return (node_index, after_prefix)
+        if node.is_prefix(word):
+            after_prefix = node.take_prefix_from(word)
+            if left_child.is_internal():
+                left_index = left_child.index()
+                return self._internal_insert(after_prefix, word_index, left_index)
+            elif left_child.is_empty():
+                new_left = self._new_branch(after_prefix, word_index)
+                node.set_left(new_left)
+                self._store_node(node, node_index)
+                return True
 
         if right_child.is_internal():
             right_index = right_child.index()
-            return self._internal_insert(word, right_index)
-            #next_result = self._internal_search(word, right_index, distance)
-            #search_result.extend(next_result)
-        elif right_child.is_word():
-            if word == '':
-                return (-1, '')
-                #search_result.append(right_child)
+            return self._internal_insert(word, word_index, right_index)
         elif right_child.is_empty():
-            logging.info(f'Insere {word} à esquerda de {node_index}')
-        
-        return search_result
+            new_right = self._new_branch(word, word_index)
+            node.set_right(new_right)
+            self._store_node(node, node_index)
+            return True
+        return False
+
         
     @classmethod
     def _header_size(cls) -> int:
@@ -189,6 +174,18 @@ class DataBase:
             file.seek(0, 0)
             self._root = root
             file.write(self.header_format.pack(self._length, root))
+
+    def _new_branch(self, after_prefix: str, word_index: int) -> ChildHandle:
+        if after_prefix == '':
+            new_node = Node.from_prefix('')
+            new_node.set_left(ChildHandle.new_word(word_index))
+            new_index = self._append_node(new_node)
+            return ChildHandle.new_internal(new_index)
+
+        new_node = Node.from_prefix(after_prefix[0])
+        new_node.set_left(self._new_branch(after_prefix[1:], word_index))
+        new_index = self._append_node(new_node)
+        return ChildHandle.new_internal(new_index)
 
     def _load_node(self, index: int) -> Node:
         if index >= self._length: print(f'INDICE INVALIDO: {index}')
