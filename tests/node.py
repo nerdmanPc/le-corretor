@@ -111,8 +111,8 @@ class Node:
 
     def take_prefix_from(self, word: str) -> str:
         #logging.info(f'Tira prefixo "{self._prefix}" de "{word}".')
-        ptr = prefix_size()
-        if is_prefix(word):
+        ptr = self.prefix_size()
+        if self.is_prefix(word):
             return word[ptr:]
         return ''
 
