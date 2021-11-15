@@ -18,7 +18,7 @@ class DataBase:
             with open(trie_path, 'xb') as file:
                 #logging.info(f'Inicializou arquivo vazio em: "{trie_path}"')
                 self._length = 0
-                self._root = -1
+                self._root = 0
                 file.write(self.header_format.pack(self._length, self._root))
             #new_root = self._append_node(Node.new_empty())
             #self._set_root(new_root)
@@ -34,7 +34,7 @@ class DataBase:
         search_result = self._internal_search(word, self._root, 0)
         if len(search_result) > 0:
             return
-        word_index = self._dict.add_entry(word)
+        word_index = self._dict.add_word(word)
         self._internal_insert(word, word_index, self._root)
         
     def count_word(self, word: str):
@@ -45,25 +45,28 @@ class DataBase:
         self._set_prev_index(word_index)
         #logging.info(f'Contou digitacao de "{word}"')
 
-    def match_word(self, word_entry: str) -> Optional[List[str]]:
-        #logging.info(f'Buscou palavra "{word_entry}"')
+    def match_word(self, word: str) -> Optional[List[str]]:
+        logging.debug(f'Em DataBase.match_word("{word}"):')
         sorted_queue = PriorityQueue()
-        exact_match = self._internal_search(word_entry, self._root, 0)
+        exact_match = self._internal_search(word, self._root, 0)
         if len(exact_match) == 1: #palavra esta correta
             return None
-        approx_match = self._internal_search(word_entry, self._root, 1)
+        approx_match = self._internal_search(word, self._root, 1)
+        logging.debug(f'approx_match = {approx_match}')
         for word_handle in approx_match:
             word_index = word_handle.index()
             #word_entry = self._dict._load_word(word_index)
-            sorted_queue.put(self._dict.str_form_index(word_index))
+            sorted_queue.put(self._dict.word_from_index(word_index))
             #if len(result >= 3):
             #    return result
+        logging.debug(f'sorted_queue = {sorted_queue}')
         result = []
         for i in range(3):
             if sorted_queue.empty():
                 break
             next_word = sorted_queue.get()
             result.append(next_word)
+        logging.debug(f'result = {result}')
         return result
 
     #def count_following(self, first: str, following: str):

@@ -1,5 +1,6 @@
 import logging
-logging.basicConfig(format = '%(levelname)s: %(message)s', level = logging.DEBUG)
+#logging.basicConfig(format = '%(levelname)s: %(message)s', level = logging.DEBUG)
+logging.basicConfig(level = logging.DEBUG)
 
 from typing import List, Dict, Optional
 from struct import Struct
@@ -24,7 +25,7 @@ class ChildHandle:
 
     @classmethod
     def new_empty(cls): # -> ChildHandle
-        return cls(ChildType.NONE, -1)
+        return cls(ChildType.NONE, 0)
 
     @classmethod
     def new_internal(cls, index: int): # -> ChildHandle
@@ -56,7 +57,7 @@ class ChildHandle:
         return ChildHandle( ChildType(type) , index) 
 
     def into_bytes(self) -> bytes:
-        #logging.info(f'Serializando ponteiro para filho.')
+        #logging.debug(f'ChildHandle.into_bytes(): self = {self}')
         return self.format.pack(self._type.value, self._index) 
 
     @classmethod
@@ -77,26 +78,32 @@ class Node:
     @classmethod
     def from_prefix(cls, prefix: str):
         #logging.info(f'Inicializando node com letra "{prefix}".')
-        return cls(prefix, None, None)
+        return cls(prefix, ChildHandle.new_empty(), ChildHandle.new_empty())
 
     @classmethod 
     def from_bytes(cls, data: bytes): #-> Node
         #logging.info(f'Deserializando node.')
-        (prefix) = cls.header_format.unpack(data[:cls.header_size])
-        ptr = ChildHandle.size()
-        left = ChildHandle.from_bytes(data[cls.header_size:ptr])
-        right = ChildHandle.from_bytes(data[cls.header_size+ptr:])
-        #TODO Chamar ChildHandle.from_bytes() para criar o nó esquerdo e direito
+        (prefix,) = cls.header_format.unpack(data[:cls.header_size])
+        if prefix != b'\0':
+            prefix = str(prefix, 'utf-8')
+        else:
+            prefix = ''
+        left_start = cls.header_size
+        right_start = left_start + ChildHandle.size()
+        left = ChildHandle.from_bytes(data[left_start:right_start])
+        right = ChildHandle.from_bytes(data[right_start:])
         return Node(prefix, left, right)
 
     def into_bytes(self) -> bytes:
         #logging.info(f'Serializando node.')
-        data = bytearray(self.size())
-        data[:self.header_size] = self.header_format.pack(self._prefix)
-        ptr = ChildHandle.size()
-        data[self.header_size:ptr] = ChildHandle.into_bytes(self._left)
-        data[self.header_size+ptr:] = ChildHandle.into_bytes(self._right)
-        #TODO Chamar ChildHandle.into_bytes() para serializar os nós esquerdo e direito
+        data = bytearray(self.size()) # PREEENCHE COM ZEROS
+        if len(self._prefix) == 1:
+            prefix_bytes = bytes(self._prefix, 'utf-8')
+            data[:self.header_size] = self.header_format.pack(prefix_bytes)
+        left_start = self.header_format.size
+        right_start = left_start + ChildHandle.size()
+        data[left_start:right_start] = ChildHandle.into_bytes(self._left)
+        data[right_start:] = ChildHandle.into_bytes(self._right)
         return bytes(data)
 
     @classmethod

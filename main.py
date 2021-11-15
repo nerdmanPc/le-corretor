@@ -25,7 +25,7 @@ def insert_words():
 def type_following(first_word: str) -> str:
     data_base = DataBase(FILE_PATH, DICT_PATH)
     following_list = data_base.match_following(first_word)
-    logging.info(f'Resultado da busca de sequencias: {following_list}')
+    #logging.info(f'Resultado da busca de sequencias: {following_list}')
     following_list = ' '.join(following_list)
     print(f'proximas palavras: {following_list}')
     logging.info('Digite a palavra seguinte:')
@@ -39,9 +39,10 @@ def type_word() -> Tuple[bool, str]:
     logging.info('Digite a palavra desejada:')
     typed_word = input()
     match_result = data_base.match_word(typed_word)
-    logging.info(f'Resultado da busca: {match_result}')
+    #logging.info(f'Resultado da busca: {match_result}')
     # match_result = None, se a palavra esta correta ou match_result = lista de alternativas, se a palavra esta errada
     if match_result is not None:
+        #logging.debug(f'join({match_result})')
         suggestions = ' '.join(match_result)
         print(f'palavra desconhecida - possiveis correcoes: {suggestions}')
         logging.info('Digite a palavra correta:')

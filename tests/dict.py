@@ -15,7 +15,7 @@ class WordEntry:
 
     @classmethod
     def from_str(cls, word: str): # -> Word
-        logging.info(f'Criando registro vazio.')
+        logging.info(f'Criando registro da palavra "{word}".')
         return cls(word, 0, [])
 
     @classmethod 
@@ -50,7 +50,7 @@ class Dictionary:
         except FileExistsError:
             with open(dict_path,'rb') as file:
                 data = file.read(self.header_size)
-                (length) = self.header_format.unpack(data)
+                (length,) = self.header_format.unpack(data)
                 self._length = length
 
     def count_typing(self, word_index: int):
@@ -79,6 +79,7 @@ class Dictionary:
     def _index_to_ptr(cls, index: int) -> int:
         entry_size = WordEntry.size()
         header_size = cls.header_size
+        #logging.debug(f'Dictionary._index_to_ptr = {header_size} + {index}*{entry_size}')
         return header_size + index * entry_size
 
     def _set_length(self, length: int) -> None:
@@ -89,6 +90,7 @@ class Dictionary:
 
     def _append_entry(self, to_append: WordEntry) -> int:
         new_index = self._length
+        #logging.debug(f'Dictionary._append_entry(to_append={to_append}): new_index={new_index}')
         self._store_entry(to_append, new_index)
         self._set_length(self._length + 1)
         return new_index
@@ -104,6 +106,7 @@ class Dictionary:
 
     def _store_entry(self, entry: WordEntry, index: int) -> None:
         if index > self._length: print(f'INDICE INVALIDO: {index}')
+        #logging.debug(f'Dictionary._store_entry(entry={entry}, index={index})')
         store_position = self._index_to_ptr(index)
         with open(self._dict_path, 'r+b') as file:
             file.seek(store_position, 0)
