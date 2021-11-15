@@ -78,7 +78,7 @@ class DataBase:
         #logging.info(f'Buscou sequencias a partir de "{first}"')
         #TODO refatorar essa desgraceira
         first_index = self._internal_search(first, self._root, 0)[0]
-        entry = self._dict._load_entry(first_index.index)
+        entry = self._dict._load_entry(first_index.index())
         result = []
         for word, freq in entry._sequencies.items():
             result.append(word)
