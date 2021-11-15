@@ -1,8 +1,13 @@
 import logging
 logging.basicConfig(format = '%(levelname)s: %(message)s', level = logging.DEBUG)
 
+from queue import PriorityQueue
 from struct import Struct
 from typing import List, Dict
+
+class WordFreq:
+    def __init__(self, word_index: int, frequency: int) -> None:
+        self.
 
 class WordEntry:
     format = Struct('> s30 L s30 L s30 L s30 L')
@@ -12,6 +17,9 @@ class WordEntry:
         self._word = word
         self._frequency = frequency
         self._sequencies = sequencies
+
+    def __str__(self) -> str:
+        return ""
 
     @classmethod
     def from_str(cls, word: str): # -> Word
@@ -49,6 +57,21 @@ class WordEntry:
         logging.info(f'Serializando registro.')
         return bytes()
 
+    def count_typing(self):
+        pass #TODO
+
+    def count_sequence(self, second_index: int):
+        pass #TODO
+
+    def word_str(self) -> str:
+        pass #TODO
+
+    def following_str(self) -> str:
+        pass #TODO
+
+    def __str__(self) -> str:
+         pas #TODO
+
     @classmethod
     def size(cls) -> int:
         logging.info(f'Calculando tamanho do registro.') 
@@ -77,23 +100,45 @@ class Dictionary:
                 self._length = length
 
     def count_typing(self, word_index: int):
-        logging.info(f'Contou digitacao de "{word_index}"')
+        entry = self._load_entry(word_index)
+        entry.count_typing()
+        self._store_entry(entry, word_index)
+        #logging.info(f'Contou digitacao de "{word_index}"')
 
     def count_sequence(self, first_index: int, second_index: int):
-        logging.info(f'Contou sequencia: "{first_index}" -> "{second_index}"')
+        entry = self._load_entry(first_index)
+        entry.count_sequence(second_index)
+        self._store_entry(entry, first_index)
+        #logging.info(f'Contou sequencia: "{first_index}" -> "{second_index}"')
 
     def word_from_index(self, word_index: int) -> str:
-        logging.info(f'Consulta string do índice "{word_index}"')
+        entry = self._load_entry(word_index)
+        return entry.word_str()
+        #logging.info(f'Consulta string do índice "{word_index}"')
 
     def add_word(self, word: str) -> int:
         new_entry = WordEntry.from_str(word)
         return self._append_entry(new_entry)
 
     def __str__(self) -> str:
-        return '<Lista de palavras e frequencias>'
+        sorted_queue = PriorityQueue()
+
+        for index in range(self._length):
+            entry = self._load_entry(index)
+            #word = entry.word_str()
+            formatted_entry = str(entry)
+            sorted_queue.put(formatted_entry)
+
+        formatted_entries = []
+        while not sorted_queue.empty():
+            formatted_entry = sorted_queue.get()
+            formatted_entries.append(formatted_entry)
+        return '\n'.join(formatted_entries)
 
     def following_str(self, first_index: int) -> str:
-        return '<Lista de palavras e frequencias a partir de "{}">'.format(first_index)
+        entry = self._load_entry(first_index)
+        return entry.following_str()
+        #return '<Lista de palavras e frequencias a partir de "{}">'.format(first_index)
 
     def empty(self) -> bool:
         return self._length == 0

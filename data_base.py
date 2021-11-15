@@ -47,19 +47,20 @@ class DataBase:
 
     def match_word(self, word: str) -> Optional[List[str]]:
         logging.debug(f'Em DataBase.match_word("{word}"):')
-        sorted_queue = PriorityQueue()
+
         exact_match = self._internal_search(word, self._root, 0)
         if len(exact_match) == 1: #palavra esta correta
             return None
+
+        sorted_queue = PriorityQueue()
         approx_match = self._internal_search(word, self._root, 1)
         logging.debug(f'approx_match = {approx_match}')
+
         for word_handle in approx_match:
             word_index = word_handle.index()
-            #word_entry = self._dict._load_word(word_index)
             sorted_queue.put(self._dict.word_from_index(word_index))
-            #if len(result >= 3):
-            #    return result
         logging.debug(f'sorted_queue = {sorted_queue}')
+
         result = []
         for i in range(3):
             if sorted_queue.empty():
