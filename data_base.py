@@ -8,7 +8,7 @@ from dict import Dictionary, WordEntry
 from struct import Struct
 
 class DataBase:
-    header_format = Struct('> L L')  #Header(length: uint32, root: uint32)
+    header_format = Struct('> L L l')  #Header(length: uint32, root: uint32)
     
     def __init__(self, trie_path: str, dict_path: str):
         self._trie_path = trie_path
@@ -19,16 +19,19 @@ class DataBase:
                 #logging.info(f'Inicializou arquivo vazio em: "{trie_path}"')
                 self._length = 0
                 self._root = 0
-                file.write(self.header_format.pack(self._length, self._root))
+                #self._prev_index = None
+                file.write(self.header_format.pack(self._length, self._root, -1) )
             #new_root = self._append_node(Node.new_empty())
             #self._set_root(new_root)
         except FileExistsError:
             with open(trie_path, "rb") as file:
                 #logging.info(f'Abriu arquivo salvo em: "{trie_path}"')
                 header = file.read(self._header_size())
-                (length, root) = self.header_format.unpack(header)
+                (length, root, prev_index) = self.header_format.unpack(header)
                 self._length = length
                 self._root = root
+                if prev_index >= 0:
+                    self._prev_index = prev_index
     
     def insert_word(self, word: str):
         search_result = self._internal_search(word, self._root, 0)
@@ -173,10 +176,13 @@ class DataBase:
         with open(self._trie_path, 'r+b') as file:
             file.seek(0, 0)
             self._length = length
-            file.write(self.header_format.pack(length, self._root))
+            file.write(self.header_format.pack(length, self._root, self._prev_index))
 
     def _set_prev_index(self, prev_index: int):
-        self._prev_index = prev_index
+        with open(self._trie_path, 'r+b') as file:
+            file.seek(0, 0)
+            self._prev_index = prev_index
+            file.write(self.header_format.pack(self._length, self._root, prev_index))
 
     def empty(self) -> bool:
         return self._length == 0
@@ -185,7 +191,7 @@ class DataBase:
         with open(self._trie_path, 'r+b') as file:
             file.seek(0, 0)
             self._root = root
-            file.write(self.header_format.pack(self._length, root))
+            file.write(self.header_format.pack(self._length, root, self._prev_index))
 
     def _new_branch(self, after_prefix: str, word_index: int) -> ChildHandle:
         if after_prefix == '':

@@ -88,7 +88,12 @@ class WordEntry:
         for word, freq in self._sequencies:
             words_freqs.append( (word, freq) )
         logging.debug(f'Antes de contar: {words_freqs}')
-        self._sequencies[second] += 1
+
+        if second in self._sequencies:
+            self._sequencies[second] += 1
+        else:
+            self._sequencies[second] = 1
+
         words_freqs = []
         for word, freq in self._sequencies:
             words_freqs.append( (word, freq) )
