@@ -47,7 +47,7 @@ class DataBase:
         #logging.info(f'Contou digitacao de "{word}"')
 
     def match_word(self, word: str) -> Optional[List[str]]:
-        logging.debug(f'Em DataBase.match_word("{word}"):')
+        #logging.debug(f'Em DataBase.match_word("{word}"):')
 
         exact_match = self._internal_search(word, self._root, 0)
         if len(exact_match) == 1: #palavra esta correta
@@ -55,12 +55,12 @@ class DataBase:
 
         sorted_queue = PriorityQueue()
         approx_match = self._internal_search(word, self._root, 1)
-        logging.debug(f'approx_match = {approx_match}')
+        #logging.debug(f'approx_match = {approx_match}')
 
         for word_handle in approx_match:
             word_index = word_handle.index()
             sorted_queue.put(self._dict.word_from_index(word_index))
-        logging.debug(f'sorted_queue = {sorted_queue}')
+        #logging.debug(f'sorted_queue = {sorted_queue}')
 
         result = []
         for i in range(3):
@@ -68,7 +68,7 @@ class DataBase:
                 break
             next_word = sorted_queue.get()
             result.append(next_word)
-        logging.debug(f'result = {result}')
+        #logging.debug(f'result = {result}')
         return result
 
     #def count_following(self, first: str, following: str):

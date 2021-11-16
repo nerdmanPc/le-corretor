@@ -83,7 +83,16 @@ class WordEntry:
         #logging.info(f'Contou digitacao de "{self._word}"')
 
     def count_sequence(self, second: str):
+        logging.debug(f'Em count_sequence({second}):')
+        words_freqs = []
+        for word, freq in self._sequencies:
+            words_freqs.append( (word, freq) )
+        logging.debug(f'Antes de contar: {words_freqs}')
         self._sequencies[second] += 1
+        words_freqs = []
+        for word, freq in self._sequencies:
+            words_freqs.append( (word, freq) )
+        logging.debug(f'Depois de contar: {words_freqs}')
         #logging.info(f'Contou sequencia: "{self._word}" -> "{second_index}"')
 
     def word_str(self) -> str:
