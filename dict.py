@@ -30,10 +30,10 @@ class WordEntry:
         #sq_x = a palavra x seguinte
         #fq_x = a frequencia da palavra x seguinte
         (word, freq, sq_a, fq_a, sq_b, fq_b, sq_c, fq_c) = cls.format.unpack(data)
-        word = str(word, 'utf-8')
-        sq_a = str(sq_a, 'utf-8')
-        sq_b = str(sq_b, 'utf-8')
-        sq_c = str(sq_c, 'utf-8')
+        word = str(word, 'utf-8').rstrip('\0')
+        sq_a = str(sq_a, 'utf-8').rstrip('\0')
+        sq_b = str(sq_b, 'utf-8').rstrip('\0')
+        sq_c = str(sq_c, 'utf-8').rstrip('\0')
         sequencies = {}
         if sq_a != "":
             sequencies[sq_a] = fq_a
@@ -41,11 +41,7 @@ class WordEntry:
             sequencies[sq_b] = fq_b
         if sq_c != "":
             sequencies[sq_c] = fq_c
-        #sequencies = {
-        #    sq_a: fq_a,
-        #    sq_b: fq_b,
-        #    sq_c: fq_c
-        #}
+        #logging.debug(f'from_bytes() = WordEntry({word}, {freq}, {sequencies})')
         #logging.info(f'Deserializando registro "{word}".')
         return WordEntry(word, freq, sequencies)
 
@@ -83,21 +79,21 @@ class WordEntry:
         #logging.info(f'Contou digitacao de "{self._word}"')
 
     def count_sequence(self, second: str):
-        logging.debug(f'Em count_sequence({second}):')
-        words_freqs = []
-        for word, freq in self._sequencies:
-            words_freqs.append( (word, freq) )
-        logging.debug(f'Antes de contar: {words_freqs}')
+        logging.debug(f'Em count_sequence({self._word} -> {second}):')
+        #words_freqs = []
+        #for word, freq in self._sequencies.items():
+        #    words_freqs.append( (word, freq) )
+        #logging.debug(f'Antes de contar: {words_freqs}')
 
         if second in self._sequencies:
             self._sequencies[second] += 1
         else:
             self._sequencies[second] = 1
 
-        words_freqs = []
-        for word, freq in self._sequencies:
-            words_freqs.append( (word, freq) )
-        logging.debug(f'Depois de contar: {words_freqs}')
+        #words_freqs = []
+        #for word, freq in self._sequencies.items():
+        #    words_freqs.append( (word, freq) )
+        #logging.debug(f'Depois de contar: {words_freqs}')
         #logging.info(f'Contou sequencia: "{self._word}" -> "{second_index}"')
 
     def word_str(self) -> str:
