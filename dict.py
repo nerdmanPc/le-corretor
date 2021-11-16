@@ -3,11 +3,7 @@ logging.basicConfig(format = '%(levelname)s: %(message)s', level = logging.DEBUG
 
 from queue import PriorityQueue
 from struct import Struct
-from typing import List, Dict
-
-#class WordFreq:
-#    def __init__(self, word_index: int, frequency: int) -> None:
-#        self.
+from typing import
 
 class WordEntry:
     format = Struct('> 30s L 30s L 30s L 30s L')
@@ -52,7 +48,6 @@ class WordEntry:
         freq = self._frequency
         sq_x =[]
         fq_x = []
-        #data = bytearray()
 
         for sq, fq in self._sequencies.items():
             sq_x.append(bytes(sq, 'utf-8'))
@@ -61,9 +56,6 @@ class WordEntry:
         for i in range(3 - len(self._sequencies)):
             sq_x.append(bytes('', 'utf-8'))
             fq_x.append(0)
-
-        #for j in range(len(sq_x)):
-        #    logging.debug(f'sq_x[{j}] {sq_x[j]} : fq_x[{j}] {fq_x[j]}')
 
         data = self.format.pack(\
             word, freq, \
@@ -79,30 +71,15 @@ class WordEntry:
         #logging.info(f'Contou digitacao de "{self._word}"')
 
     def count_sequence(self, second: str):
-        logging.debug(f'Em count_sequence({self._word} -> {second}):')
-        #words_freqs = []
-        #for word, freq in self._sequencies.items():
-        #    words_freqs.append( (word, freq) )
-        #logging.debug(f'Antes de contar: {words_freqs}')
-
+        #logging.debug(f'Em count_sequence({self._word} -> {second}):')
         if second in self._sequencies:
             self._sequencies[second] += 1
         else:
             self._sequencies[second] = 1
 
-        #words_freqs = []
-        #for word, freq in self._sequencies.items():
-        #    words_freqs.append( (word, freq) )
-        #logging.debug(f'Depois de contar: {words_freqs}')
-        #logging.info(f'Contou sequencia: "{self._word}" -> "{second_index}"')
-
     def word_str(self) -> str:
         return self._word
 
-    #frequência de próximas palavras: esta operação conterá uma linha com a letra p, seguida
-    #de outra linha contendo uma palavra. Esta operação apresentará as palavras mais frequentes
-    #utilizadas após a palavra indicada, até no máximo três. Cada linha da saída conterá uma palavra,
-    #seguida de um espaço, seguido do número de vezes em que a palavra foi utilizada após a palavra
     #apresentada como parâmetro para a operação.
     def following_str(self) -> str:
         result = []
@@ -118,6 +95,9 @@ class WordEntry:
     def size(cls) -> int:
         #logging.info(f'Calculando tamanho do registro.')
         return cls.format.size
+
+    def frequency(self) -> int:
+        return self._frequency
 
 class Dictionary:
     header_format = Struct('> L')
@@ -158,6 +138,20 @@ class Dictionary:
         entry = self._load_entry(word_index)
         return entry.word_str()
         #logging.info(f'Consulta string do índice "{word_index}"')
+    
+    def freq_from_index(self, word_index: int) -> int:
+        entry = self._load_entry(word_index)
+        return entry.frequency()
+
+    def match_following(self, first_index: int) -> List[str]:
+        entry = self._load_entry(first_index)
+        sorted_queue = PriorityQueue()
+        for word, freq in entry._sequencies.items():
+            sorted_queue.put( (freq, word) )
+        result = []
+        while not sorted_queue.empty():
+            (freq, word) = sorted_queue.get()
+            result.append(word)
 
     def add_word(self, word: str) -> int:
         new_entry = WordEntry.from_str(word)
