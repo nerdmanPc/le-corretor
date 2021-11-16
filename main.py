@@ -25,7 +25,7 @@ def insert_words():
 def type_following(first_word: str) -> str:
     data_base = DataBase(FILE_PATH, DICT_PATH)
     following_list = data_base.match_following(first_word)
-    #logging.info(f'Resultado da busca de sequencias: {following_list}')
+    logging.info(f'Resultado da busca de sequencias: {following_list}')
     following_list = ' '.join(following_list)
     print(f'proximas palavras: {following_list}')
     logging.info('Digite a palavra seguinte:')
