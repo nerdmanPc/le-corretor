@@ -1,0 +1,19 @@
+palavra desconhecida - possiveis correcoes: frase
+proximas palavras: correta adicional exemplo
+palavra desconhecida - possiveis correcoes: exemplo
+proximas palavras: de para exemplo
+adicional 3
+adicionar 0
+correta 3
+da 0
+de 9
+entrada 3
+entrega 3
+exemplo 12
+frase 9
+para 3
+trabalho 3
+uma 3
+uma 3
+entrada 3
+trabalho 3

@@ -92,7 +92,10 @@ class DataBase:
         return str(self._dict)
 
     def following_str(self, first: str) -> str:
-        return '<Lista de palavras e frequencias a partir de "{}">'.format(first)
+        search_result = self._internal_search(first, self._root, 0)
+        first_index = search_result[0].index()
+        return self._dict.following_str(first_index)
+        #return '<Lista de palavras e frequencias a partir de "{}">'.format(first)
 
     def _internal_search(self, word: str, node_index: int, distance: int) -> List[ChildHandle]:
 
