@@ -3,7 +3,7 @@ logging.basicConfig(format = '%(levelname)s: %(message)s', level = logging.DEBUG
 
 from queue import PriorityQueue
 from struct import Struct
-from typing import
+from typing import List, Dict
 
 class WordEntry:
     format = Struct('> 30s L 30s L 30s L 30s L')
@@ -152,6 +152,7 @@ class Dictionary:
         while not sorted_queue.empty():
             (freq, word) = sorted_queue.get()
             result.append(word)
+        return result
 
     def add_word(self, word: str) -> int:
         new_entry = WordEntry.from_str(word)

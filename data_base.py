@@ -78,7 +78,7 @@ class DataBase:
     def match_following(self, first: str) -> List[str]:
         #logging.info(f'Buscou sequencias a partir de "{first}"')
         #TODO refatorar essa desgraceira
-        first_index = self._internal_search(first, self._root, 0)[0]
+        first_index = self._internal_search(first, self._root, 0)[0].index()
         return self._dict.match_following(first_index)
         #entry = self._dict._load_entry(first_index.index())
         ##logging.debug(f'Em match_following({first}): palavra={entry.word_str()}\nsequencias=({entry.following_str()})')
