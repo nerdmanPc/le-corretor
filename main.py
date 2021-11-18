@@ -15,10 +15,10 @@ DICT_PATH = 'dict.dat'
 
 def insert_words():
     data_base = DataBase(FILE_PATH, DICT_PATH)
-    logging.info('Digite o numero de palavras:')
+    #logging.info('Digite o numero de palavras:')
     n_words = int(input())
     for i in range(n_words):
-        logging.info(f'Digite a palavra {i+1}:')
+        #logging.info(f'Digite a palavra {i+1}:')
         word = input()
         data_base.insert_word(word)
 
@@ -36,7 +36,7 @@ def show_following(first_word: str):
 # Retorna a palavra contada e se o programa deve sugerir a seguinte
 def type_word() -> Tuple[bool, str]:
     data_base = DataBase(FILE_PATH, DICT_PATH)
-    logging.info('Digite a palavra desejada:')
+    #logging.info('Digite a palavra desejada:')
     typed_word = input()
     match_result = data_base.match_word(typed_word)
     #logging.info(f'Resultado da busca: {match_result}')
@@ -45,7 +45,7 @@ def type_word() -> Tuple[bool, str]:
         #logging.debug(f'join({match_result})')
         suggestions = ' '.join(match_result)
         print(f'palavra desconhecida - possiveis correcoes: {suggestions}')
-        logging.info('Digite a palavra correta:')
+        #logging.info('Digite a palavra correta:')
         correct_word = input()
         if correct_word == typed_word:
             data_base.insert_word(correct_word)
@@ -63,7 +63,7 @@ def print_freq_words():
 
 def print_freq_after():
     data_base = DataBase(FILE_PATH, DICT_PATH)
-    logging.info('Digite a palavra a ser consultada:')
+    #logging.info('Digite a palavra a ser consultada:')
     first = input()
     print(data_base.following_str(first))
 
@@ -71,7 +71,7 @@ def exit_shell():
     sys.exit(0)
 
 #Loop principal que processa os comandos
-logging.info('Digite o comando:')
+#logging.info('Digite o comando:')
 entry = input()
 while entry != 'e':
     if(entry == 'i'):
@@ -86,6 +86,6 @@ while entry != 'e':
     elif(entry == 'p'):
         print_freq_after()
     #print('prox. comando: ', end='')
-    logging.info('Digite o comando:')
+    #logging.info('Digite o comando:')
     entry = input()
 exit_shell()

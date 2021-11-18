@@ -7,7 +7,6 @@ frase
 correta
 da
 adicionar
-
 d
 exemplo
 d
@@ -20,15 +19,12 @@ d
 correta
 d
 frase
-
 d
 adicional
 adicional
-
 d
 fraee
 frase
-
 d
 exemplo
 d
@@ -36,7 +32,6 @@ de
 d
 entrada
 entrada
-
 d
 exemplo
 d
